@@ -1,0 +1,26 @@
+{
+  "name": "graph-generator",
+  "version": "1.0.0",
+  "description": "Graph Generator",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/janmchan/graph-generator.git"
+  },
+  "keywords": [
+    "graph"
+  ],
+  "author": "Jan Michael Chan",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/janmchan/graph-generator/issues"
+  },
+  "homepage": "https://github.com/janmchan/graph-generator#readme",
+  "dependencies": {
+    "chart.js": "^2.7.2",
+    "chartjs-node": "^1.7.1"
+  }
+}
