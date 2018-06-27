@@ -1,50 +1,57 @@
-//https://github.com/vmpowerio/chartjs-node
+exports.handler = async (event) => {
+    //https://github.com/vmpowerio/chartjs-node
+    console.log('started');
+    const ChartjsNode = require('chartjs-node');
+    
+    var data = demoData();
+    var height = 600;
+    var width = 600;
+    if(event && event.body)
+    {
+        var body = {};
+        data = JSON.parse(event.body);
+        console.log("using body parameter");
+        if(data.height && !isNaN(data.height)){
+            console.log("found height");
+            height = data.height;
+        }
+        if(data.width && !isNaN(data.width)){
+            console.log("found width");
+            width = data.width;
+        }
+    }
+   
+    var chartNode = new ChartjsNode(width,height);
+    
+    console.log('about to start chart generation');
+    var value = chartNode.drawChart(data)
+    .then(() => {
+        // chart is created
+        // get image as png buffer
+        return chartNode.getImageBuffer('image/png');
+    })
+    .then(buffer => {
+        //Convert buffer to base64 which can be sent as a response
+        var responseBody = JSON.stringify({
+            contentType: 'image/png',
+            base64: new Buffer(buffer).toString('base64')
+        });
+        let response = {
+            statusCode: 200,
+            headers: null,
+            body: responseBody,
+            isBase64Encoded : true,
+        };
+        console.log('Chart generated');
+        return response;
+    });
+    console.log('returning value');
+    return value;
+};
 
-const ChartjsNode = require('chartjs-node');
-// 600x600 canvas size
-var chartNode = new ChartjsNode(600, 600);
-var chartJsOptions = demoOptions();
 
-return chartNode.drawChart(chartJsOptions)
-.then(() => {
-    // chart is created
- 
-    // get image as png buffer
-    return chartNode.getImageBuffer('image/png');
-})
-.then(buffer => {
-    Array.isArray(buffer) // => true
-    //Convert buffer to base64 which can be sent as a response
-    var base64data = new Buffer(buffer).toString('base64');
-    let response = {
-        statusCode: 200,
-        headers: {'Content-type' : 'image/png'},
-        body: base64data,
-        isBase64Encoded : true,
-      };
-      console.log(response);
-    //return callback(null, response);
-    // as a stream
-
-    return chartNode.getImageStream('image/png');
-})
-.then(streamResult => {
-    // using the length property you can do things like
-    // directly upload the image to s3 by using the
-    // stream and length properties
-    streamResult.stream // => Stream object
-    streamResult.length // => Integer length of stream
-    // write to a file
-    return chartNode.writeImageToFile('image/png', './testimage.png');
-})
-.then(() => {
-    // chart is now written to the file path
-    // ./testimage.png
-});
-
-function demoOptions()
+function demoData()
 {
-    var horizontalBarChartData = demoData();
     return {
         type: 'bar',
         data: {
